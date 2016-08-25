@@ -1,0 +1,99 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.LED;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+public class ColorSensorDriver extends LinearOpMode {
+    public ColorSensorDriver.ColorSensorDevice device;
+    ColorSensor colorSensor;
+    DeviceInterfaceModule cdim;
+    LED led;
+    TouchSensor t;
+
+    public ColorSensorDriver() {
+        this.device = ColorSensorDriver.ColorSensorDevice.MODERN_ROBOTICS_I2C;
+    }
+
+    public void runOpMode() throws InterruptedException {
+        this.hardwareMap.logDevices();
+        this.cdim = (DeviceInterfaceModule)this.hardwareMap.deviceInterfaceModule.get("dim");
+        switch(ColorSensorDriver.SyntheticClass_1.$SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[this.device.ordinal()]) {
+        case 1:
+            this.colorSensor = (ColorSensor)this.hardwareMap.colorSensor.get("nxt");
+            break;
+        case 2:
+            this.colorSensor = (ColorSensor)this.hardwareMap.colorSensor.get("lady");
+            break;
+        case 3:
+            this.colorSensor = (ColorSensor)this.hardwareMap.colorSensor.get("mr");
+        }
+
+        this.led = (LED)this.hardwareMap.led.get("led");
+        this.t = (TouchSensor)this.hardwareMap.touchSensor.get("t");
+        this.waitForStart();
+        float[] hsvValues = new float[]{0.0F, 0.0F, 0.0F};
+        final float[] values = hsvValues;
+        final View relativeLayout = ((Activity)this.hardwareMap.appContext).findViewById(2131427353);
+
+        while(this.opModeIsActive()) {
+            this.enableLed(this.t.isPressed());
+            switch(ColorSensorDriver.SyntheticClass_1.$SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[this.device.ordinal()]) {
+            case 1:
+                Color.RGBToHSV(this.colorSensor.red(), this.colorSensor.green(), this.colorSensor.blue(), hsvValues);
+                break;
+            case 2:
+                Color.RGBToHSV(this.colorSensor.red() * 255 / 800, this.colorSensor.green() * 255 / 800, this.colorSensor.blue() * 255 / 800, hsvValues);
+                break;
+            case 3:
+                Color.RGBToHSV(this.colorSensor.red() * 8, this.colorSensor.green() * 8, this.colorSensor.blue() * 8, hsvValues);
+            }
+
+            this.telemetry.addData("Clear", (float)this.colorSensor.alpha());
+            this.telemetry.addData("Red  ", (float)this.colorSensor.red());
+            this.telemetry.addData("Green", (float)this.colorSensor.green());
+            this.telemetry.addData("Blue ", (float)this.colorSensor.blue());
+            this.telemetry.addData("Hue", hsvValues[0]);
+            relativeLayout.post(new Runnable() {
+                public void run() {
+                    relativeLayout.setBackgroundColor(Color.HSVToColor(255, values));
+                }
+            });
+            this.waitOneFullHardwareCycle();
+        }
+
+    }
+
+    private void enableLed(boolean value) {
+        switch(ColorSensorDriver.SyntheticClass_1.$SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[this.device.ordinal()]) {
+        case 1:
+            this.colorSensor.enableLed(value);
+            break;
+        case 2:
+            this.led.enable(value);
+            break;
+        case 3:
+            this.colorSensor.enableLed(value);
+        }
+
+    }
+
+    public static enum ColorSensorDevice {
+        ADAFRUIT,
+        HITECHNIC_NXT,
+        MODERN_ROBOTICS_I2C;
+
+        private ColorSensorDevice() {
+        }
+    }
+}

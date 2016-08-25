@@ -1,0 +1,184 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor.Direction;
+import com.qualcomm.robotcore.util.Range;
+
+public class TheRealSlimShady extends OpMode {
+    static final double ARM_MIN_RANGE = 0.0D;
+    static final double ARM_MAX_RANGE = 1.0D;
+    DcMotor motorBase1;
+    DcMotor motorBase2;
+    DcMotor Hook1;
+    DcMotor Hook2;
+    Servo HookServ;
+    Servo ClimbServ;
+    Servo HangLeft;
+    Servo HangRight;
+    double HookPosition;
+    double ClimbPosition;
+
+    public TheRealSlimShady() {
+    }
+
+    public void init() {
+        this.motorBase1 = (DcMotor)this.hardwareMap.dcMotor.get("Right_Motor");
+        this.motorBase2 = (DcMotor)this.hardwareMap.dcMotor.get("Left_Motor");
+        this.motorBase2.setDirection(Direction.REVERSE);
+        this.Hook1 = (DcMotor)this.hardwareMap.dcMotor.get("Hook1");
+        this.Hook2 = (DcMotor)this.hardwareMap.dcMotor.get("Hook2");
+        this.HookServ = (Servo)this.hardwareMap.servo.get("HookServ");
+        this.HangLeft = (Servo)this.hardwareMap.servo.get("hl");
+        this.HangRight = (Servo)this.hardwareMap.servo.get("hr");
+        this.gamepad2.left_trigger = 0.0F;
+        this.gamepad2.right_trigger = 0.0F;
+        this.gamepad1.left_trigger = 0.0F;
+        this.gamepad1.right_trigger = 0.0F;
+        this.ClimbServ.setPosition(0.5D);
+        this.HookPosition = 0.0D;
+        this.ClimbPosition = 0.0D;
+    }
+
+    public void loop() {
+        float throttle = -this.gamepad1.left_stick_y;
+        float throttle2 = this.gamepad1.right_stick_y;
+        throttle = Range.clip(throttle, -1.0F, 1.0F);
+        throttle2 = Range.clip(throttle2, -1.0F, 1.0F);
+        throttle = (float)this.scaleInput((double)throttle);
+        throttle2 = (float)this.scaleInput((double)throttle2);
+        this.motorBase1.setPower((double)throttle);
+        this.motorBase2.setPower((double)(-throttle2));
+        double Hook = (double)(-this.gamepad2.left_stick_y);
+        Hook = this.scaleInput(Hook);
+        Hook = Range.clip(Hook, -1.0D, 1.0D);
+        this.Hook1.setPower(Hook);
+        this.Hook2.setPower(Hook);
+        double servoPower = (double)(-this.gamepad2.right_stick_y);
+        if(servoPower >= -0.01D && servoPower <= 0.01D) {
+            servoPower = 0.5D;
+        } else {
+            servoPower = (double)scaleServ((float)servoPower);
+        }
+
+        servoPower = Range.clip(servoPower, 0.0D, 1.0D);
+        this.HookServ.setPosition(servoPower);
+        AnalogInput potentiometer = (AnalogInput)this.hardwareMap.analogInput.get("hpotter");
+        int value1 = potentiometer.getValue();
+        this.telemetry.addData("1", "potentiometer " + value1);
+        if(this.gamepad2.a) {
+            if(value1 > 520) {
+                this.HookServ.setPosition(0.65D);
+            } else if(value1 > 491) {
+                this.HookServ.setPosition(0.55D);
+            } else if(value1 < 460) {
+                this.HookServ.setPosition(0.35D);
+            } else if(value1 < 489) {
+                this.HookServ.setPosition(0.45D);
+            } else {
+                this.HookServ.setPosition(0.5D);
+            }
+        }
+
+        if(this.gamepad2.b) {
+            if(value1 > 590) {
+                this.HookServ.setPosition(0.65D);
+            } else if(value1 > 561) {
+                this.HookServ.setPosition(0.55D);
+            } else if(value1 < 530) {
+                this.HookServ.setPosition(0.35D);
+            } else if(value1 < 559) {
+                this.HookServ.setPosition(0.45D);
+            } else {
+                this.HookServ.setPosition(0.5D);
+            }
+        }
+
+        if(this.gamepad1.y) {
+            this.HangLeft.setPosition(0.25D);
+        } else if(this.gamepad1.x) {
+            this.HangLeft.setPosition(0.75D);
+        } else {
+            this.HangLeft.setPosition(0.5D);
+        }
+
+        if(this.gamepad1.a) {
+            this.HangRight.setPosition(0.25D);
+        } else if(this.gamepad1.b) {
+            this.HangRight.setPosition(0.75D);
+        } else {
+            this.HangRight.setPosition(0.5D);
+        }
+
+        if(this.gamepad2.x) {
+            if(this.Hook2.getPower() != 0.0D) {
+                this.HookServ.setPosition(0.0D);
+            } else {
+                this.HookServ.setPosition(1.0D);
+            }
+        }
+
+    }
+
+    public void stop() {
+        super.stop();
+    }
+
+    double scaleInput(double dVal) {
+        double[] scaleArray = new double[]{0.0D, 0.05D, 0.09D, 0.1D, 0.12D, 0.15D, 0.18D, 0.24D, 0.3D, 0.36D, 0.43D, 0.5D, 0.6D, 0.72D, 0.85D, 1.0D, 1.0D};
+        int index = (int)(dVal * 16.0D);
+        if(index < 0) {
+            index = -index;
+        }
+
+        if(index > 16) {
+            index = 16;
+        }
+
+        double dScale = 0.0D;
+        if(dVal < 0.0D) {
+            dScale = -scaleArray[index];
+        } else {
+            dScale = scaleArray[index];
+        }
+
+        return dScale;
+    }
+
+    public static float scaleServ(float pow) {
+        float power = 0.0F;
+        if(pow > 0.0F) {
+            power = (pow * pow + 1.0F) / 2.0F;
+        } else {
+            power = (-pow * pow + 1.0F) / 2.0F;
+        }
+
+        return power;
+    }
+
+    public static double servTo(int value1, int location) {
+        double value = (double)(-value1);
+        value = (double)location - value;
+        value /= 300.0D;
+        if(value > 0.0D) {
+            value = (value + 1.0D) / 2.0D;
+        } else if(value < 0.0D) {
+            value = (value + 1.0D) / 2.0D;
+        }
+
+        if(value < 0.58D && value > 5.0D) {
+            value = 0.58D;
+        } else if(value > 0.42D && value < 5.0D) {
+            value = 0.42D;
+        }
+
+        return value;
+    }
+}

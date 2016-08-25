@@ -1,0 +1,13 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftccommon;
+
+public final class R$xml {
+    public static final int preferences = 2130968577;
+
+    public R$xml() {
+    }
+}

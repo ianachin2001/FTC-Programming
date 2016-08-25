@@ -1,0 +1,21 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.ftcrobotcontroller.opmodes.HDriveTeleop;
+import com.qualcomm.ftcrobotcontroller.opmodes.TheRealSlimShady;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
+
+public class FtcOpModeRegister implements OpModeRegister {
+    public FtcOpModeRegister() {
+    }
+
+    public void register(OpModeManager manager) {
+        manager.register("TheRealSlim", TheRealSlimShady.class);
+        manager.register("HDrive", HDriveTeleop.class);
+    }
+}

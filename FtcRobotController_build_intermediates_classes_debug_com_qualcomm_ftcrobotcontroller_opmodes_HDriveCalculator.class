@@ -1,0 +1,48 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+public class HDriveCalculator {
+    double driveLeft;
+    double driveRight;
+    double driveMiddle;
+
+    public HDriveCalculator() {
+    }
+
+    public void calculateMovement(double joystickX, double joystickY, double turnStickX, double angle) {
+        double scaleFactor = Math.sqrt(joystickX * joystickX + joystickY * joystickY);
+        double moveAngle = Math.atan(joystickY / joystickX);
+        double xMove = scaleFactor * Math.cos(moveAngle - angle);
+        double yMove = scaleFactor * Math.sin(moveAngle - angle);
+        double turn = turnStickX / 2.0D;
+        this.driveLeft = yMove + turn;
+        this.driveRight = yMove - turn;
+        this.driveMiddle = xMove;
+        if(this.driveLeft > 1.0D) {
+            this.driveRight *= 1.0D / this.driveLeft;
+            this.driveMiddle *= 1.0D / this.driveLeft;
+            this.driveLeft = 1.0D;
+        } else if(this.driveRight > 1.0D) {
+            this.driveLeft *= 1.0D / this.driveRight;
+            this.driveMiddle *= 1.0D / this.driveRight;
+            this.driveRight = 1.0D;
+        }
+
+    }
+
+    public double getLeftDrive() {
+        return this.driveLeft;
+    }
+
+    public double getRightDrive() {
+        return this.driveRight;
+    }
+
+    public double getMiddleDrive() {
+        return this.driveMiddle;
+    }
+}

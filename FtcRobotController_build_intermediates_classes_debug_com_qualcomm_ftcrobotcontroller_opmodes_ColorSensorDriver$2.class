@@ -1,0 +1,32 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.ftcrobotcontroller.opmodes.ColorSensorDriver.ColorSensorDevice;
+
+// $FF: synthetic class
+class ColorSensorDriver$2 {
+    static {
+        try {
+            $SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[ColorSensorDevice.HITECHNIC_NXT.ordinal()] = 1;
+        } catch (NoSuchFieldError var3) {
+            ;
+        }
+
+        try {
+            $SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[ColorSensorDevice.ADAFRUIT.ordinal()] = 2;
+        } catch (NoSuchFieldError var2) {
+            ;
+        }
+
+        try {
+            $SwitchMap$com$qualcomm$ftcrobotcontroller$opmodes$ColorSensorDriver$ColorSensorDevice[ColorSensorDevice.MODERN_ROBOTICS_I2C.ordinal()] = 3;
+        } catch (NoSuchFieldError var1) {
+            ;
+        }
+
+    }
+}

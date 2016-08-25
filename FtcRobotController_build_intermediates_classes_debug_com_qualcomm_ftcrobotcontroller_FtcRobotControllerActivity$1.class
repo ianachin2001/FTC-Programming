@@ -1,0 +1,27 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+
+class FtcRobotControllerActivity$1 implements ServiceConnection {
+    FtcRobotControllerActivity$1(FtcRobotControllerActivity this$0) {
+        this.this$0 = this$0;
+    }
+
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        FtcRobotControllerBinder binder = (FtcRobotControllerBinder)service;
+        this.this$0.onServiceBind(binder.getService());
+    }
+
+    public void onServiceDisconnected(ComponentName name) {
+        this.this$0.controllerService = null;
+    }
+}

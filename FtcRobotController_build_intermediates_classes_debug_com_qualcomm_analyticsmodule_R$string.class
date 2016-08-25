@@ -1,0 +1,13 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.analyticsmodule;
+
+public final class R$string {
+    public static final int app_name = 2131296265;
+
+    public R$string() {
+    }
+}

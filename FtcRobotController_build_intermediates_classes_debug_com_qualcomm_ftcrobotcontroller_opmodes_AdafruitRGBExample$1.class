@@ -1,0 +1,22 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import android.graphics.Color;
+import android.view.View;
+import com.qualcomm.ftcrobotcontroller.opmodes.AdafruitRGBExample;
+
+class AdafruitRGBExample$1 implements Runnable {
+    AdafruitRGBExample$1(AdafruitRGBExample this$0, View var2, float[] var3) {
+        this.this$0 = this$0;
+        this.val$relativeLayout = var2;
+        this.val$values = var3;
+    }
+
+    public void run() {
+        this.val$relativeLayout.setBackgroundColor(Color.HSVToColor(255, this.val$values));
+    }
+}

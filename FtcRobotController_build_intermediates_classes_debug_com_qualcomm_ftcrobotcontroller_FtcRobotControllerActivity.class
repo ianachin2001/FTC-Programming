@@ -1,0 +1,306 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.ActionBar.OnMenuVisibilityListener;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.FtcEventLoop;
+import com.qualcomm.ftccommon.FtcRobotControllerService;
+import com.qualcomm.ftccommon.Restarter;
+import com.qualcomm.ftccommon.UpdateUI;
+import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
+import com.qualcomm.ftccommon.UpdateUI.Callback;
+import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
+import com.qualcomm.hardware.HardwareFactory;
+import com.qualcomm.robotcore.hardware.configuration.Utility;
+import com.qualcomm.robotcore.util.Dimmer;
+import com.qualcomm.robotcore.util.ImmersiveMode;
+import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.wifi.WifiDirectAssistant.Event;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.Serializable;
+
+public class FtcRobotControllerActivity extends Activity {
+    private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+    private static final boolean USE_DEVICE_EMULATION = false;
+    private static final int NUM_GAMEPADS = 2;
+    public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
+    protected SharedPreferences preferences;
+    protected Callback callback;
+    protected Context context;
+    private Utility utility;
+    protected ImageButton buttonMenu;
+    protected TextView textDeviceName;
+    protected TextView textWifiDirectStatus;
+    protected TextView textRobotStatus;
+    protected TextView[] textGamepad = new TextView[2];
+    protected TextView textOpMode;
+    protected TextView textErrorMessage;
+    protected ImmersiveMode immersion;
+    protected UpdateUI updateUI;
+    protected Dimmer dimmer;
+    protected LinearLayout entireScreenLayout;
+    protected FtcRobotControllerService controllerService;
+    protected FtcEventLoop eventLoop;
+    protected ServiceConnection connection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            FtcRobotControllerBinder binder = (FtcRobotControllerBinder)service;
+            FtcRobotControllerActivity.this.onServiceBind(binder.getService());
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            FtcRobotControllerActivity.this.controllerService = null;
+        }
+    };
+
+    public FtcRobotControllerActivity() {
+    }
+
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if("android.hardware.usb.action.USB_ACCESSORY_ATTACHED".equals(intent.getAction())) {
+            DbgLog.msg("USB Device attached; app restart may be needed");
+        }
+
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setContentView(2130903044);
+        this.utility = new Utility(this);
+        this.context = this;
+        this.entireScreenLayout = (LinearLayout)this.findViewById(2131427348);
+        this.buttonMenu = (ImageButton)this.findViewById(2131427352);
+        this.buttonMenu.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                FtcRobotControllerActivity.this.openOptionsMenu();
+            }
+        });
+        this.textDeviceName = (TextView)this.findViewById(2131427351);
+        this.textWifiDirectStatus = (TextView)this.findViewById(2131427354);
+        this.textRobotStatus = (TextView)this.findViewById(2131427355);
+        this.textOpMode = (TextView)this.findViewById(2131427356);
+        this.textErrorMessage = (TextView)this.findViewById(2131427357);
+        this.textGamepad[0] = (TextView)this.findViewById(2131427358);
+        this.textGamepad[1] = (TextView)this.findViewById(2131427359);
+        this.immersion = new ImmersiveMode(this.getWindow().getDecorView());
+        this.dimmer = new Dimmer(this);
+        this.dimmer.longBright();
+        FtcRobotControllerActivity.RobotRestarter restarter = new FtcRobotControllerActivity.RobotRestarter();
+        this.updateUI = new UpdateUI(this, this.dimmer);
+        this.updateUI.setRestarter(restarter);
+        this.updateUI.setTextViews(this.textWifiDirectStatus, this.textRobotStatus, this.textGamepad, this.textOpMode, this.textErrorMessage, this.textDeviceName);
+        UpdateUI var10003 = this.updateUI;
+        this.updateUI.getClass();
+        this.callback = new Callback(var10003);
+        PreferenceManager.setDefaultValues(this, 2130968577, false);
+        this.preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        this.hittingMenuButtonBrightensScreen();
+    }
+
+    protected void onStart() {
+        super.onStart();
+        RobotLog.writeLogcatToDisk(this, 4096);
+        Intent intent = new Intent(this, FtcRobotControllerService.class);
+        this.bindService(intent, this.connection, 1);
+        this.utility.updateHeader("No current file!", 2131296333, 2131427434, 2131427329);
+        this.callback.wifiDirectUpdate(Event.DISCONNECTED);
+        this.entireScreenLayout.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                FtcRobotControllerActivity.this.dimmer.handleDimTimer();
+                return false;
+            }
+        });
+    }
+
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public void onPause() {
+        super.onPause();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        if(this.controllerService != null) {
+            this.unbindService(this.connection);
+        }
+
+        RobotLog.cancelWriteLogcatToDisk(this);
+    }
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus) {
+            if(ImmersiveMode.apiOver19()) {
+                this.immersion.hideSystemUI();
+            }
+        } else {
+            this.immersion.cancelSystemUIHide();
+        }
+
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(2131361792, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+        case 2131427528:
+            Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
+            this.startActivityForResult(settingsIntent, 3);
+            return true;
+        case 2131427529:
+            this.dimmer.handleDimTimer();
+            Toast.makeText(this.context, "Restarting Robot", 0).show();
+            this.requestRobotRestart();
+            return true;
+        case 2131427530:
+            Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
+            viewLogsIntent.putExtra("Filename", RobotLog.getLogFilename(this));
+            this.startActivity(viewLogsIntent);
+            return true;
+        case 2131427531:
+            Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
+            this.startActivity(intent);
+            return true;
+        case 2131427532:
+            this.finish();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    protected void onActivityResult(int request, int result, Intent intent) {
+        if(request == 1 && result == -1) {
+            Toast extra = Toast.makeText(this.context, "Configuration Complete", 1);
+            extra.setGravity(17, 0, 0);
+            this.showToast(extra);
+        }
+
+        if(request == 3 && result == -1) {
+            Serializable extra1 = intent.getSerializableExtra("CONFIGURE_FILENAME");
+            if(extra1 != null) {
+                this.utility.saveToPreferences(extra1.toString(), 2131296333);
+                this.utility.updateHeader("No current file!", 2131296333, 2131427434, 2131427329);
+            }
+        }
+
+    }
+
+    public void onServiceBind(FtcRobotControllerService service) {
+        DbgLog.msg("Bound to Ftc Controller Service");
+        this.controllerService = service;
+        this.updateUI.setControllerService(this.controllerService);
+        this.callback.wifiDirectUpdate(this.controllerService.getWifiDirectStatus());
+        this.callback.robotUpdate(this.controllerService.getRobotStatus());
+        this.requestRobotSetup();
+    }
+
+    private void requestRobotSetup() {
+        if(this.controllerService != null) {
+            FileInputStream fis = this.fileSetup();
+            if(fis != null) {
+                HardwareFactory modernRoboticsFactory = new HardwareFactory(this.context);
+                modernRoboticsFactory.setXmlInputStream(fis);
+                this.eventLoop = new FtcEventLoop(modernRoboticsFactory, new FtcOpModeRegister(), this.callback, this);
+                this.controllerService.setCallback(this.callback);
+                this.controllerService.setupRobot(this.eventLoop);
+            }
+        }
+    }
+
+    private FileInputStream fileSetup() {
+        String filename = Utility.CONFIG_FILES_DIR + this.utility.getFilenameFromPrefs(2131296333, "No current file!") + ".xml";
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(filename);
+        } catch (FileNotFoundException var5) {
+            String msg = "Cannot open robot configuration file - " + filename;
+            this.utility.complainToast(msg, this.context);
+            DbgLog.msg(msg);
+            this.utility.saveToPreferences("No current file!", 2131296333);
+            fis = null;
+        }
+
+        this.utility.updateHeader("No current file!", 2131296333, 2131427434, 2131427329);
+        return fis;
+    }
+
+    private void requestRobotShutdown() {
+        if(this.controllerService != null) {
+            this.controllerService.shutdownRobot();
+        }
+    }
+
+    private void requestRobotRestart() {
+        this.requestRobotShutdown();
+        this.requestRobotSetup();
+    }
+
+    protected void hittingMenuButtonBrightensScreen() {
+        ActionBar actionBar = this.getActionBar();
+        if(actionBar != null) {
+            actionBar.addOnMenuVisibilityListener(new OnMenuVisibilityListener() {
+                public void onMenuVisibilityChanged(boolean isVisible) {
+                    if(isVisible) {
+                        FtcRobotControllerActivity.this.dimmer.handleDimTimer();
+                    }
+
+                }
+            });
+        }
+
+    }
+
+    public void showToast(final Toast toast) {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                toast.show();
+            }
+        });
+    }
+
+    protected class RobotRestarter implements Restarter {
+        protected RobotRestarter() {
+        }
+
+        public void requestRestart() {
+            FtcRobotControllerActivity.this.requestRobotRestart();
+        }
+    }
+}

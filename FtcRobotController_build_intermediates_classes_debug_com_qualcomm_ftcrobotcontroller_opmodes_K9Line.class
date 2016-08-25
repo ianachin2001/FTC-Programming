@@ -1,0 +1,65 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor.Direction;
+
+public class K9Line extends OpMode {
+    static final double MOTOR_POWER = 0.15D;
+    static final double HOLD_IR_SIGNAL_STRENGTH = 0.2D;
+    static final double LIGHT_THRESHOLD = 0.5D;
+    double armPosition;
+    double clawPosition;
+    DcMotor motorRight;
+    DcMotor motorLeft;
+    Servo claw;
+    Servo arm;
+    LightSensor reflectedLight;
+
+    public K9Line() {
+    }
+
+    public void init() {
+        this.motorRight = (DcMotor)this.hardwareMap.dcMotor.get("motor_2");
+        this.motorLeft = (DcMotor)this.hardwareMap.dcMotor.get("motor_1");
+        this.motorLeft.setDirection(Direction.REVERSE);
+        this.arm = (Servo)this.hardwareMap.servo.get("servo_1");
+        this.claw = (Servo)this.hardwareMap.servo.get("servo_6");
+        this.armPosition = 0.2D;
+        this.clawPosition = 0.25D;
+        this.reflectedLight = (LightSensor)this.hardwareMap.lightSensor.get("light_sensor");
+        this.reflectedLight.enableLed(true);
+    }
+
+    public void loop() {
+        double reflection = 0.0D;
+        double right = 0.0D;
+        this.arm.setPosition(this.armPosition);
+        this.claw.setPosition(this.clawPosition);
+        double left;
+        if(reflection < 0.5D) {
+            left = 0.15D;
+            right = 0.0D;
+        } else {
+            left = 0.0D;
+            right = 0.15D;
+        }
+
+        this.motorRight.setPower(left);
+        this.motorLeft.setPower(right);
+        this.telemetry.addData("Text", "*** Robot Data***");
+        this.telemetry.addData("reflection", "reflection:  " + Double.toString(reflection));
+        this.telemetry.addData("left tgt pwr", "left  pwr: " + Double.toString(left));
+        this.telemetry.addData("right tgt pwr", "right pwr: " + Double.toString(right));
+    }
+
+    public void stop() {
+    }
+}

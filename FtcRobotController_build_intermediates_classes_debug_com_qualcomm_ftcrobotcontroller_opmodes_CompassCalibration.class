@@ -1,0 +1,82 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CompassSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CompassSensor.CompassMode;
+import com.qualcomm.robotcore.hardware.DcMotor.Direction;
+
+public class CompassCalibration extends OpMode {
+    static final double HOLD_POSITION = 3.0D;
+    static final double MOTOR_POWER = 0.2D;
+    private double turnTime = 20.0D;
+    private boolean keepTurning = true;
+    private boolean returnToMeasurementMode = false;
+    private boolean monitorCalibrationSuccess = false;
+    double pauseTime = 2.0D;
+    CompassSensor compass;
+    DcMotor motorRight;
+    DcMotor motorLeft;
+
+    public CompassCalibration() {
+    }
+
+    public void init() {
+        this.compass = (CompassSensor)this.hardwareMap.compassSensor.get("compass");
+        this.motorRight = (DcMotor)this.hardwareMap.dcMotor.get("right");
+        this.motorLeft = (DcMotor)this.hardwareMap.dcMotor.get("left");
+    }
+
+    public void init_loop() {
+        this.motorRight.setDirection(Direction.REVERSE);
+        this.compass.setMode(CompassMode.CALIBRATION_MODE);
+        this.telemetry.addData("Compass", "Compass in calibration mode");
+        this.pauseTime = this.time + 3.0D;
+    }
+
+    public void loop() {
+        if(this.time > this.pauseTime) {
+            if(this.keepTurning) {
+                this.telemetry.addData("Compass", "Calibration mode. Turning the robot...");
+                DbgLog.msg("Calibration mode. Turning the robot...");
+                this.motorRight.setPower(-0.2D);
+                this.motorLeft.setPower(0.2D);
+                if(this.time > this.turnTime + 3.0D) {
+                    this.keepTurning = false;
+                    this.returnToMeasurementMode = true;
+                }
+            } else if(this.returnToMeasurementMode) {
+                this.telemetry.addData("Compass", "Returning to measurement mode");
+                DbgLog.msg("Returning to measurement mode");
+                this.motorRight.setPower(0.0D);
+                this.motorLeft.setPower(0.0D);
+                this.compass.setMode(CompassMode.MEASUREMENT_MODE);
+                this.pauseTime = this.time + 3.0D;
+                this.returnToMeasurementMode = false;
+                this.monitorCalibrationSuccess = true;
+                this.telemetry.addData("Compass", "Waiting for feedback from sensor...");
+            } else if(this.monitorCalibrationSuccess) {
+                String msg = this.calibrationMessageToString(this.compass.calibrationFailed());
+                this.telemetry.addData("Compass", msg);
+                if(this.compass.calibrationFailed()) {
+                    DbgLog.error("Calibration failed and needs to be re-run");
+                } else {
+                    DbgLog.msg(msg);
+                }
+            }
+
+            this.pauseTime = this.time + 3.0D;
+        }
+
+    }
+
+    private String calibrationMessageToString(boolean failed) {
+        return failed?"Calibration Failed!":"Calibration Succeeded.";
+    }
+}

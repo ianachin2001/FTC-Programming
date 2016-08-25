@@ -1,0 +1,20 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+
+class FtcRobotControllerActivity$2 implements OnClickListener {
+    FtcRobotControllerActivity$2(FtcRobotControllerActivity this$0) {
+        this.this$0 = this$0;
+    }
+
+    public void onClick(View v) {
+        this.this$0.openOptionsMenu();
+    }
+}

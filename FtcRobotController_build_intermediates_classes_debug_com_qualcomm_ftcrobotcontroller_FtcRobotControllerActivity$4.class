@@ -1,0 +1,22 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller;
+
+import android.app.ActionBar.OnMenuVisibilityListener;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+
+class FtcRobotControllerActivity$4 implements OnMenuVisibilityListener {
+    FtcRobotControllerActivity$4(FtcRobotControllerActivity this$0) {
+        this.this$0 = this$0;
+    }
+
+    public void onMenuVisibilityChanged(boolean isVisible) {
+        if(isVisible) {
+            this.this$0.dimmer.handleDimTimer();
+        }
+
+    }
+}

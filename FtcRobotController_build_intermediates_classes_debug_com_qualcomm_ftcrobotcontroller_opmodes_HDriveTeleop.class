@@ -1,0 +1,39 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.ftcrobotcontroller.opmodes.HDriveCalculator;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+public class HDriveTeleop extends OpMode {
+    public double gyroAngle;
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor middleMotor;
+    HDriveCalculator calculator;
+
+    public HDriveTeleop() {
+    }
+
+    public void init() {
+        this.leftMotor = (DcMotor)this.hardwareMap.dcMotor.get("leftMotor");
+        this.rightMotor = (DcMotor)this.hardwareMap.dcMotor.get("rightMotor");
+        this.middleMotor = (DcMotor)this.hardwareMap.dcMotor.get("middleMotor");
+        this.calculator = new HDriveCalculator();
+    }
+
+    public void loop() {
+        float leftX = this.gamepad1.left_stick_x;
+        float leftY = this.gamepad1.left_stick_y;
+        float rightX = this.gamepad1.right_stick_x;
+        float rightY = this.gamepad1.right_stick_y;
+        this.calculator.calculateMovement((double)leftX, (double)leftY, (double)rightX, this.gyroAngle);
+        this.leftMotor.setPower(this.calculator.getLeftDrive());
+        this.rightMotor.setPower(this.calculator.getRightDrive());
+        this.middleMotor.setPower(this.calculator.getMiddleDrive());
+    }
+}

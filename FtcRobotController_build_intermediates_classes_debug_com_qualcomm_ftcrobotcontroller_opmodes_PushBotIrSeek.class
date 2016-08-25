@@ -1,0 +1,51 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.DcMotor.Direction;
+import com.qualcomm.robotcore.util.Range;
+
+public class PushBotIrSeek extends LinearOpMode {
+    static final double kBaseSpeed = 0.15D;
+    static final double kMinimumStrength = 0.08D;
+    static final double kMaximumStrength = 0.6D;
+    IrSeekerSensor irSeeker;
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+
+    public PushBotIrSeek() {
+    }
+
+    public void runOpMode() throws InterruptedException {
+        this.irSeeker = (IrSeekerSensor)this.hardwareMap.irSeekerSensor.get("sensor_ir");
+        this.leftMotor = (DcMotor)this.hardwareMap.dcMotor.get("left_drive");
+        this.rightMotor = (DcMotor)this.hardwareMap.dcMotor.get("right_drive");
+        this.rightMotor.setDirection(Direction.REVERSE);
+        this.waitForStart();
+
+        while(this.opModeIsActive()) {
+            double angle = this.irSeeker.getAngle() / 30.0D;
+            double strength = this.irSeeker.getStrength();
+            if(strength > 0.08D && strength < 0.6D) {
+                double leftSpeed = Range.clip(0.15D + angle / 8.0D, -1.0D, 1.0D);
+                double rightSpeed = Range.clip(0.15D - angle / 8.0D, -1.0D, 1.0D);
+                this.leftMotor.setPower(leftSpeed);
+                this.rightMotor.setPower(rightSpeed);
+            } else {
+                this.leftMotor.setPower(0.0D);
+                this.rightMotor.setPower(0.0D);
+            }
+
+            this.telemetry.addData("Seeker", this.irSeeker.toString());
+            this.telemetry.addData("Speed", " Left=" + this.leftMotor.getPower() + " Right=" + this.rightMotor.getPower());
+            this.waitOneFullHardwareCycle();
+        }
+
+    }
+}

@@ -1,0 +1,15 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+public enum ColorSensorDriver$ColorSensorDevice {
+    ADAFRUIT,
+    HITECHNIC_NXT,
+    MODERN_ROBOTICS_I2C;
+
+    private ColorSensorDriver$ColorSensorDevice() {
+    }
+}

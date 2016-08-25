@@ -1,0 +1,62 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.DcMotor.Direction;
+
+public class IrSeekerOp extends OpMode {
+    static final double MOTOR_POWER = 0.15D;
+    static final double HOLD_IR_SIGNAL_STRENGTH = 0.2D;
+    IrSeekerSensor irSeeker;
+    DcMotor motorRight;
+    DcMotor motorLeft;
+
+    public IrSeekerOp() {
+    }
+
+    public void init() {
+        this.irSeeker = (IrSeekerSensor)this.hardwareMap.irSeekerSensor.get("ir_seeker");
+        this.motorRight = (DcMotor)this.hardwareMap.dcMotor.get("motor_2");
+        this.motorLeft = (DcMotor)this.hardwareMap.dcMotor.get("motor_1");
+    }
+
+    public void start() {
+        this.motorLeft.setDirection(Direction.REVERSE);
+    }
+
+    public void loop() {
+        double angle = 0.0D;
+        double strength = 0.0D;
+        if(this.irSeeker.signalDetected()) {
+            angle = this.irSeeker.getAngle();
+            strength = this.irSeeker.getStrength();
+            if(angle < -20.0D) {
+                this.motorRight.setPower(0.15D);
+                this.motorLeft.setPower(-0.15D);
+            } else if(angle > 20.0D) {
+                this.motorRight.setPower(-0.15D);
+                this.motorLeft.setPower(0.15D);
+            } else if(strength < 0.2D) {
+                this.motorRight.setPower(0.15D);
+                this.motorLeft.setPower(0.15D);
+            } else {
+                this.motorRight.setPower(0.0D);
+                this.motorLeft.setPower(0.0D);
+            }
+        } else {
+            this.motorRight.setPower(0.0D);
+            this.motorLeft.setPower(0.0D);
+        }
+
+        this.telemetry.addData("angle", angle);
+        this.telemetry.addData("strength", strength);
+        DbgLog.msg(this.irSeeker.toString());
+    }
+}

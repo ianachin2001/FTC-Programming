@@ -1,0 +1,20 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.qualcomm.ftcrobotcontroller;
+
+import android.widget.Toast;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+
+class FtcRobotControllerActivity$5 implements Runnable {
+    FtcRobotControllerActivity$5(FtcRobotControllerActivity this$0, Toast var2) {
+        this.this$0 = this$0;
+        this.val$toast = var2;
+    }
+
+    public void run() {
+        this.val$toast.show();
+    }
+}
